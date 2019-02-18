@@ -18,13 +18,17 @@ RUN echo "change apt source" \
     && echo "deb http://security.debian.org stretch/updates main contrib non-free" >>/etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y sudo \ 
-    && apt-get install -y unzip \ 
-    && apt-get install -y unrar \ 
+    unzip \ 
+    unrar \ 
+    zlib1g-dev \ 
+    git \
     && apt-get clean && apt-get autoclean 
 
+#
+RUN docker-php-ext-install -j$(nproc) pdo_mysql \
+    && docker-php-ext-install zip
 
-RUN docker-php-ext-install -j$(nproc) pdo_mysql
-
+#
 RUN pecl install inotify && docker-php-ext-enable inotify
 
 # swoole
