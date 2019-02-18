@@ -38,9 +38,7 @@ RUN pecl install apcu && docker-php-ext-enable apcu --ini-name 10-docker-php-ext
 
 
 # composer
-RUN mkdir /var/www \ 
-    && chown -R www-data /var/www \
-    && cd /usr/local/bin \
+RUN cd /usr/local/bin \
     && curl -sS https://getcomposer.org/installer | php \
     && composer.phar global require 'composer/composer:dev-master' \
     && composer.phar global require 'codeception/codeception'
