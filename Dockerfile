@@ -7,7 +7,7 @@
 # Command format: Instruction [arguments / command ] ..
 
 # Base image to use, this nust be set as the first line
-FROM lopydev/php-7.2-cli-stretch
+FROM php:7.2-cli-stretch
 
 # Maintainer: docker_user <docker_user at email.com> (@docker_user)
 MAINTAINER zengyu 284141050@qq.com
