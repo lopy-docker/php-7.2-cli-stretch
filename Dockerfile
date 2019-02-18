@@ -7,7 +7,7 @@
 # Command format: Instruction [arguments / command ] ..
 
 # Base image to use, this nust be set as the first line
-FROM php:7.2-cli-stretch
+FROM lopydev/php-7.2-cli-stretch
 
 # Maintainer: docker_user <docker_user at email.com> (@docker_user)
 MAINTAINER zengyu 284141050@qq.com
@@ -25,7 +25,7 @@ RUN echo "change apt source" \
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 
-RUN pecl install inotify && docker-php-ext-install inotify
+RUN pecl install inotify && docker-php-ext-enable inotify
 
 # swoole
 RUN pecl install swoole && docker-php-ext-enable swoole
