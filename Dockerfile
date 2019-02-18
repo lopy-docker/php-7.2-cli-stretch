@@ -1,6 +1,5 @@
 # build:
 #
-# docker build -t registry.cn-hongkong.aliyuncs.com/lopy-dev/php7.2-cli .
 
 # This dockerfile uses the ubuntu image
 # VERSION 2 - EDITION 1
@@ -28,11 +27,6 @@ RUN docker-php-ext-install -j$(nproc) pdo_mysql
 
 RUN pecl install inotify && docker-php-ext-install inotify
 
-RUN mkdir /var/www \ 
-    && chown -R www-data /var/www \
-    && cd /usr/local/bin \
-    && curl -sS https://getcomposer.org/installer | php 
-
 # swoole
 RUN pecl install swoole && docker-php-ext-enable swoole
 
@@ -41,6 +35,26 @@ RUN pecl install apcu && docker-php-ext-enable apcu --ini-name 10-docker-php-ext
     && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
     && echo "apc.ttl=10" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
     && echo "apc.use_request_time=0" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini
+
+
+# composer
+RUN mkdir /var/www \ 
+    && chown -R www-data /var/www \
+    && cd /usr/local/bin \
+    && curl -sS https://getcomposer.org/installer | php \
+    && composer.phar global require 'composer/composer:dev-master' \
+    && composer.phar global require 'codeception/codeception'
+
+
+# update env
+RUN echo "update env" \
+    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /root/.bashrc \
+    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /root/.profile \
+    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /etc/profile 
+
+
+# support zh-cn
+ENV LANG C.UTF-8
 
 # Commands when creating a new container
 CMD ["php","-a"]
