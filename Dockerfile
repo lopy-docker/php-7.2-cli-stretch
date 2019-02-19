@@ -41,18 +41,24 @@ RUN pecl install apcu && docker-php-ext-enable apcu --ini-name 10-docker-php-ext
     && echo "apc.use_request_time=0" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini
 
 
+RUN useradd debian  -s /bin/bash -m -k /etc/skel \
+    && echo "debian  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # composer
-RUN cd /usr/local/bin \
+RUN mkdir -p /tmp/composer \
+    && cd /tmp/composer \
     && curl -sS https://getcomposer.org/installer | php \
-    && composer.phar global require 'composer/composer:dev-master' \
-    && composer.phar global require 'codeception/codeception'
+    && sudo -u debian ./composer.phar global require 'composer/composer:dev-master' \
+    && sudo -u debian ./composer.phar global require 'codeception/codeception'
 
 
 # update env
 RUN echo "update env" \
-    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /root/.bashrc \
-    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /root/.profile \
-    && echo "export PATH=\$PATH:/root/.composer/vendor/bin" >> /etc/profile 
+    && echo "export PATH=\$PATH:/home/debian/.composer/vendor/bin" >> "/root/.bashrc" \
+    && echo "export PATH=\$PATH:/home/debian/.composer/vendor/bin" >> "/home/debian/.bashrc" \
+    && echo "export PATH=\$PATH:/home/debian/.composer/vendor/bin" >> "/root/.profile" \
+    && echo "export PATH=\$PATH:/home/debian/.composer/vendor/bin" >> "/home/debian/.profile" \
+    && echo "export PATH=\$PATH:/home/debian/.composer/vendor/bin" >> "/etc/profile" 
 
 
 # support zh-cn
