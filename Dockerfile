@@ -52,11 +52,12 @@ RUN useradd debian  -s /bin/bash -m -k /etc/skel \
     && echo "debian  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # composer
-RUN mkdir -p /tmp/composer \
-    && cd /tmp/composer \
+RUN echo 'install composer' \
+    && cd /usr/local/bin/ \
     && curl -sS https://getcomposer.org/installer | php \
-    && sudo -u debian ./composer.phar global require 'composer/composer:dev-master' \
-    && sudo -u debian ./composer.phar global require 'codeception/codeception'
+    && mv composer.phar composer \
+    && sudo -u debian composer global require 'codeception/codeception'
+#    && sudo -u debian ./composer.phar global require 'composer/composer:dev-master' \
 
 
 # update env
