@@ -35,11 +35,15 @@ RUN echo "change apt source" \
 RUN docker-php-ext-install -j$(nproc) pdo_mysql \
     && docker-php-ext-install zip
 
-#
-RUN pecl install inotify && docker-php-ext-enable inotify
+# #
+# RUN pecl install inotify && docker-php-ext-enable inotify
 
-# swoole
-RUN pecl install swoole && docker-php-ext-enable swoole
+# # swoole
+# RUN pecl install swoole && docker-php-ext-enable swoole
+
+RUN pecl install redis inotify swoole \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis inotify swoole
 
 # apcu
 RUN pecl install apcu && docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini \
