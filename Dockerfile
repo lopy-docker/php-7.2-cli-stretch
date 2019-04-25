@@ -20,16 +20,19 @@ RUN echo "change apt source" \
     && apt-get install -y sudo \ 
     unzip \ 
     unrar \ 
+    proxychains \ 
     zlib1g-dev \ 
     procps inetutils-ping \
     git \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    && sed -i 's/socks4/#socks4/g' /etc/proxychains.conf \
+    && sed -i '$a\socks5 	172.17.0.1 1080' /etc/proxychains.conf \
     && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && apt-get clean && apt-get autoclean 
+    && apt-get clean && apt-get autoremove && apt-get autoclean
 
 #
 RUN docker-php-ext-install -j$(nproc) pdo_mysql \
