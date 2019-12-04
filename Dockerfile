@@ -40,6 +40,7 @@ RUN echo "change apt source" \
     && echo "apc.ttl=10" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
     && echo "apc.use_request_time=0" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
+    && docker-php-ext-install zip \
     && pecl install inotify redis \
     && docker-php-ext-enable inotify redis swoole\
     && apt-get clean autoclean \
