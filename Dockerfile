@@ -27,32 +27,31 @@ RUN echo "change apt source" \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    libssl-dev \
     && sed -i 's/socks4/#socks4/g' /etc/proxychains.conf \
     && sed -i '$a\socks5 	172.17.0.1 1080' /etc/proxychains.conf \
     && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && apt-get clean && apt-get autoremove && apt-get autoclean
+    && printf "\nyes\n\n" | pecl install swoole \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini \
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
+    && echo "apc.ttl=10" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
+    && echo "apc.use_request_time=0" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
+    && docker-php-ext-install -j$(nproc) pdo_mysql \
+    && pecl install inotify redis && docker-php-ext-install inotify redis swoole\
+    && apt-get clean autoclean \
+    && apt-get autoremove --yes \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}/ \
+    &&  rm -rf /tmp/pear 
 
-#
-RUN docker-php-ext-install -j$(nproc) pdo_mysql \
-    && docker-php-ext-install zip
 
-# #
-# RUN pecl install inotify && docker-php-ext-enable inotify
-
-# # swoole
-# RUN pecl install swoole && docker-php-ext-enable swoole
 
 RUN pecl install redis inotify swoole \
     &&  rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis inotify swoole
 
-# apcu
-RUN pecl install apcu && docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini \
-    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
-    && echo "apc.ttl=10" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini \
-    && echo "apc.use_request_time=0" >> /usr/local/etc/php/conf.d/10-docker-php-ext-apcu.ini
 
 
 RUN useradd debian  -s /bin/bash -m -k /etc/skel \
@@ -77,7 +76,8 @@ RUN echo "update env" \
 
 
 # support zh-cn
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8 \
+    TZ=Asia/Shanghai
 
 # Commands when creating a new container
 CMD ["php","-a"]
